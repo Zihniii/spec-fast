@@ -1,5 +1,11 @@
 # SpecFast⚡
 
+![Next.js](https://img.shields.io/badge/Built%20with-Next.js-black)
+![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black)
+![Status](https://img.shields.io/badge/Status-Live-success)
+![Made with Kiro](https://img.shields.io/badge/Built%20with-AWS%20Kiro-purple)
+![License](https://img.shields.io/badge/License-MIT-blue)
+
 **Idea to spec in minutes.** SpecFast transforms a raw project idea into a structured, AI-builder-ready specification through a guided 7-question intake flow — optimized for pasting directly into Cursor, Lovable, v0, or Bolt.
 
 ## What It Does
