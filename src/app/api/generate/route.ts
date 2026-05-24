@@ -124,9 +124,8 @@ Generate EXACTLY these 8 sections in this order:
    - Who uses it
    - What v1 includes
    - What v1 explicitly does NOT include
-   - Preferred stack if mentioned, otherwise suggest: 
-     React + Tailwind frontend, AWS Lambda + API Gateway backend, 
-     Anthropic Claude API for generation
+   - Preferred stack if mentioned, otherwise suggest a modern stack 
+     appropriate for the project (e.g. Next.js + Tailwind, Supabase, etc.)
    Keep this under 150 words. Make it paste-ready.
 
 Rules:
