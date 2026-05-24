@@ -1,4 +1,6 @@
 import { QUESTIONS } from '@/lib/questions';
+import { ratelimit } from "@/lib/rate-limit";
+import { headers } from "next/headers";
 
 /**
  * Validates that answers is an array of exactly 7 non-empty, non-whitespace strings.
@@ -225,6 +227,26 @@ function stripLLMArtifacts(text: string): string {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  // Rate limiting
+  const headersList = await headers();
+
+  const forwardedFor = headersList.get("x-forwarded-for");
+
+  const ip = forwardedFor
+    ? forwardedFor.split(",")[0]
+    : "anonymous";
+
+  const { success } = await ratelimit.limit(ip);
+
+  if (!success) {
+    return Response.json(
+      {
+        error: "Too many requests. Please wait a moment and try again.",
+      },
+      { status: 429 }
+    );
+  }
+
   // Validate API key
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
