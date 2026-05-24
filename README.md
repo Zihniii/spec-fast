@@ -1,36 +1,126 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SpecFast
+
+**Idea to spec in minutes.** SpecFast transforms a raw project idea into a structured, AI-builder-ready specification through a guided 7-question intake flow — optimized for pasting directly into Cursor, Lovable, v0, or Bolt.
+
+## What It Does
+
+1. **Intake** — Answer 7 focused questions about your project idea, one at a time
+2. **Generate** — AI produces a structured spec with 8 sections (overview, problem, persona, scope, metrics, assumptions, and a paste-ready prompt)
+3. **Review** — Edit any section inline with Markdown rendering
+4. **Export** — Copy as raw Markdown or as a Cursor-optimized prompt
+
+The entire flow takes under 10 minutes. No sign-up, no persistence, no fluff.
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS 4 + shadcn/ui components |
+| State | React Context + useReducer |
+| LLM | Groq API (Qwen 3 32B) |
+| Rate Limiting | Upstash Redis |
+| Testing | Vitest + fast-check |
+| Deployment | Vercel |
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm
+- A [Groq](https://console.groq.com) API key
+- An [Upstash](https://upstash.com) Redis database (for rate limiting)
+
+### Installation
+
+```bash
+git clone https://github.com/Zihniii/spec-fast.git
+cd spec-fast
+npm install
+```
+
+### Environment Variables
+
+Create a `.env.local` file in the project root:
+
+```env
+GROQ_API_KEY=your_groq_api_key_here
+UPSTASH_REDIS_REST_URL=your_upstash_redis_url_here
+UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token_here
+```
+
+### Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Testing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm test          # Run all tests once
+npm run test:watch  # Watch mode
+```
 
-## Learn More
+### Build
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build
+npm start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+├── app/
+│   ├── api/
+│   │   └── generate/
+│   │       └── route.ts        # POST /api/generate — LLM spec generation
+│   ├── globals.css             # Tailwind + design tokens
+│   ├── layout.tsx              # Root layout with AppProvider
+│   └── page.tsx                # Entry point → AppShell
+├── components/
+│   ├── ui/                     # shadcn/ui primitives
+│   │   ├── button.tsx
+│   │   ├── card.tsx
+│   │   ├── dialog.tsx
+│   │   ├── markdown.tsx        # Markdown renderer with artifact stripping
+│   │   ├── separator.tsx
+│   │   └── textarea.tsx
+│   ├── AppShell.tsx            # Screen router (intake/review/export)
+│   ├── EditableSection.tsx     # Inline-editable spec section
+│   ├── ExportScreen.tsx        # Copy as Markdown / Cursor prompt
+│   ├── IntakeScreen.tsx        # 7-question conversational flow
+│   ├── ProgressIndicator.tsx   # Animated dot progress bar
+│   ├── QuestionCard.tsx        # Single question display
+│   └── ReviewScreen.tsx        # Section list + regenerate
+├── lib/
+│   ├── constants.ts            # Cursor prompt template
+│   ├── context.tsx             # React Context + useReducer provider
+│   ├── formatters.ts           # Markdown/Cursor export formatters
+│   ├── questions.ts            # 7 intake questions config
+│   ├── rate-limit.ts           # Upstash rate limiter (10 req/min/IP)
+│   ├── reducer.ts              # App state reducer (all actions)
+│   └── utils.ts                # cn() utility for Tailwind class merging
+└── types/
+    └── index.ts                # TypeScript interfaces (AppState, actions, etc.)
+```
 
-## Deploy on Vercel
+## Rate Limiting
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The app uses Upstash Redis with a sliding window algorithm:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Limit:** 10 requests per IP per minute
+- **Identifier:** `x-forwarded-for` header (falls back to "anonymous")
+- **Response on limit:** 429 with user-friendly error message
+
+This protects Groq API quota from abuse without requiring user authentication.
+
+## License
+
+MIT
