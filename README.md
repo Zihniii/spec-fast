@@ -1,4 +1,4 @@
-# SpecFast ⚡
+# SpecFast⚡
 
 **Idea to spec in minutes.** SpecFast transforms a raw project idea into a structured, AI-builder-ready specification through a guided 7-question intake flow — optimized for pasting directly into Cursor, Lovable, v0, or Bolt.
 
