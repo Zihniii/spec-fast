@@ -126,7 +126,3 @@ The app uses Upstash Redis with a sliding window algorithm:
 - **Response on limit:** 429 with user-friendly error message
 
 This protects Groq API quota from abuse without requiring user authentication.
-
-## License
-
-MIT
